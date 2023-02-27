@@ -1,5 +1,24 @@
 local lsp = require("lsp-zero")
 
+local lspconfig = require("lspconfig")
+require("mason-lspconfig").setup_handlers {
+    function (server_name)
+        lspconfig[server_name].setup {}
+    end,
+
+    ["lua_ls"] = function ()
+        lspconfig.lua_ls.setup {
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = { "vim" }
+                    }
+                }
+            }
+        }
+    end
+}
+
 lsp.preset("recommended")
 
 lsp.ensure_installed({
