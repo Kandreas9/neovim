@@ -14,7 +14,6 @@ require("nvim-treesitter.configs").setup({
 		"c",
 		"lua",
 		"vim",
-		"help",
 	},
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)

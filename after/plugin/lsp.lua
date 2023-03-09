@@ -1,23 +1,24 @@
 local lsp = require("lsp-zero")
+local nvim_lsp = require("lspconfig")
 
 local lspconfig = require("lspconfig")
-require("mason-lspconfig").setup_handlers {
-    function (server_name)
-        lspconfig[server_name].setup {}
-    end,
+require("mason-lspconfig").setup_handlers({
+	function(server_name)
+		lspconfig[server_name].setup({})
+	end,
 
-    ["lua_ls"] = function ()
-        lspconfig.lua_ls.setup {
-            settings = {
-                Lua = {
-                    diagnostics = {
-                        globals = { "vim" }
-                    }
-                }
-            }
-        }
-    end
-}
+	["lua_ls"] = function()
+		lspconfig.lua_ls.setup({
+			settings = {
+				Lua = {
+					diagnostics = {
+						globals = { "vim" },
+					},
+				},
+			},
+		})
+	end,
+})
 
 lsp.preset("recommended")
 
@@ -34,6 +35,18 @@ lsp.configure("lua-language-server", {
 				globals = { "vim" },
 			},
 		},
+	},
+})
+
+lsp.configure("tsserver", {
+	root_dir = nvim_lsp.util.root_pattern("package.json"),
+	single_file_support = false,
+})
+
+lsp.configure("denols", {
+	root_dir = nvim_lsp.util.root_pattern("deno.jsonc"),
+	init_options = {
+		lint = true,
 	},
 })
 
