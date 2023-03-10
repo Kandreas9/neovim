@@ -14,11 +14,11 @@ end
 mason.setup({})
 
 mason_lspconfig.setup({
-	automatic_installation = true,
-    ensure_installed = {
-	    "tsserver",
-	    "rust_analyzer",
-    },
+	automatic_installation = false,
+    -- ensure_installed = {
+	   --  "tsserver",
+	   --  "rust_analyzer",
+    -- },
 })
 
 mason_lspconfig.setup_handlers({

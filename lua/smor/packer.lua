@@ -35,16 +35,16 @@ return require("packer").startup(function(use)
 	-- Lsp and cpm and mason
 	use("neovim/nvim-lspconfig")
 
-    use("williamboman/mason.nvim")
-    use("williamboman/mason-lspconfig.nvim")
+	use("williamboman/mason.nvim")
+	use("williamboman/mason-lspconfig.nvim")
 
-    use("hrsh7th/nvim-cmp")
-    use("hrsh7th/cmp-nvim-lsp")
-    use("hrsh7th/cmp-buffer")
-    use("hrsh7th/cmp-path")
+	use("hrsh7th/nvim-cmp")
+	use("hrsh7th/cmp-nvim-lsp")
+	use("hrsh7th/cmp-buffer")
+	use("hrsh7th/cmp-path")
 
-    use("L3MON4D3/LuaSnip")
-
+	use("L3MON4D3/LuaSnip")
+	use("ckipp01/stylua-nvim")
 	use({
 		"nvim-tree/nvim-tree.lua",
 		requires = {
@@ -56,12 +56,15 @@ return require("packer").startup(function(use)
 		"prettier/vim-prettier",
 		run = "npm install",
 	})
-	use("ckipp01/stylua-nvim")
 	use({
 		"windwp/nvim-autopairs",
 		config = function()
 			require("nvim-autopairs").setup({})
 		end,
+	})
+	use({
+		"nvim-lualine/lualine.nvim",
+		requires = { "kyazdani42/nvim-web-devicons", opt = true },
 	})
 	use({
 		"numToStr/Comment.nvim",
