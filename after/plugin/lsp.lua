@@ -1,82 +1,11 @@
-local lsp = require("lsp-zero")
-local nvim_lsp = require("lspconfig")
+local status, nvim_lsp = pcall(require, "lspconfig")
+if not status then
+	return
+end
 
-local lspconfig = require("lspconfig")
-require("mason-lspconfig").setup_handlers({
-	function(server_name)
-		lspconfig[server_name].setup({})
-	end,
-
-	["lua_ls"] = function()
-		lspconfig.lua_ls.setup({
-			settings = {
-				Lua = {
-					diagnostics = {
-						globals = { "vim" },
-					},
-				},
-			},
-		})
-	end,
-})
-
-lsp.preset("recommended")
-
-lsp.ensure_installed({
-	"tsserver",
-	"rust_analyzer",
-})
-
--- Fix Undefined global 'vim'
-lsp.configure("lua-language-server", {
-	settings = {
-		Lua = {
-			diagnostics = {
-				globals = { "vim" },
-			},
-		},
-	},
-})
-
-lsp.configure("tsserver", {
-	root_dir = nvim_lsp.util.root_pattern("package.json"),
-	single_file_support = false,
-})
-
-lsp.configure("denols", {
-	root_dir = nvim_lsp.util.root_pattern("deno.jsonc"),
-	init_options = {
-		lint = true,
-	},
-})
-
-local cmp = require("cmp")
-local cmp_select = { behavior = cmp.SelectBehavior.Select }
-local cmp_mappings = lsp.defaults.cmp_mappings({
-	["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
-	["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
-	["<C-y>"] = cmp.mapping.confirm({ select = true }),
-	["<C-Space>"] = cmp.mapping.complete(),
-})
-
-cmp_mappings["<Tab>"] = nil
-cmp_mappings["<S-Tab>"] = nil
-
-lsp.setup_nvim_cmp({
-	mapping = cmp_mappings,
-})
-
-lsp.set_preferences({
-	suggest_lsp_servers = false,
-	sign_icons = {
-		error = "E",
-		warn = "W",
-		hint = "H",
-		info = "I",
-	},
-})
-
-lsp.on_attach(function(client, bufnr)
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
 	local opts = { buffer = bufnr, remap = false }
 
 	vim.keymap.set("n", "gd", function()
@@ -109,9 +38,76 @@ lsp.on_attach(function(client, bufnr)
 	vim.keymap.set("i", "<C-h>", function()
 		vim.lsp.buf.signature_help()
 	end, opts)
-end)
+end
 
-lsp.setup()
+-- Set up completion using nvim_cmp with LSP source
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+nvim_lsp.flow.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
+
+nvim_lsp.denols.setup({
+	on_attach = on_attach,
+	root_dir = nvim_lsp.util.root_pattern("deno.json"),
+	init_options = {
+		lint = true,
+	},
+})
+
+nvim_lsp.tsserver.setup({
+	on_attach = on_attach,
+	root_dir = nvim_lsp.util.root_pattern("package.json"),
+	init_options = {
+		lint = true,
+	},
+	filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
+	cmd = { "typescript-language-server", "--stdio" },
+	capabilities = capabilities,
+})
+
+nvim_lsp.sourcekit.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
+
+nvim_lsp.lua_ls.setup({
+	capabilities = capabilities,
+	on_attach = function(client, bufnr)
+		on_attach(client, bufnr)
+		enable_format_on_save(client, bufnr)
+	end,
+	settings = {
+		Lua = {
+			diagnostics = {
+				-- Get the language server to recognize the `vim` global
+				globals = { "vim" },
+			},
+
+			workspace = {
+				-- Make the server aware of Neovim runtime files
+				library = vim.api.nvim_get_runtime_file("", true),
+				checkThirdParty = false,
+			},
+		},
+	},
+})
+
+nvim_lsp.tailwindcss.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
+
+nvim_lsp.cssls.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
+
+nvim_lsp.astro.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+})
 
 vim.diagnostic.config({
 	virtual_text = true,
