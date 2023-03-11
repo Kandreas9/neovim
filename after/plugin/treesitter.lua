@@ -19,6 +19,7 @@ treesitter.setup({
 		"c",
 		"lua",
 		"vim",
+        "svelte",
 	},
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)
