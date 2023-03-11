@@ -43,21 +43,38 @@ end
 -- Set up completion using nvim_cmp with LSP source
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-nvim_lsp.tsserver.setup({
-	root_dir = nvim_lsp.util.root_pattern("package.json"),
-	single_file_support = false,
+nvim_lsp.tailwindcss.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
 })
 
 nvim_lsp.denols.setup({
-	root_dir = nvim_lsp.util.root_pattern("deno.jsonc"),
+    on_attach = on_attach,
+	capabilities = capabilities,
+	root_dir = nvim_lsp.util.root_pattern("deno.json"),
 	init_options = {
 		lint = true,
 	},
 })
 
-nvim_lsp.tailwindcss.setup({
-	on_attach = on_attach,
+nvim_lsp.tsserver.setup({
+    on_attach = on_attach,
 	capabilities = capabilities,
+	single_file_support = false,
+	root_dir = nvim_lsp.util.root_pattern("package.json"),
+	init_options = {
+		lint = true,
+	},
+})
+
+nvim_lsp.lua_ls.setup({
+	settings = {
+		Lua = {
+			diagnostics = {
+				globals = { "vim" },
+			},
+		},
+	},
 })
 
 vim.diagnostic.config({
