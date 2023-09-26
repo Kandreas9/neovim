@@ -89,6 +89,22 @@ mason_lspconfig.setup_handlers({
 		})
 	end,
 
+	["unocss"] = function()
+		lspconfig.unocss.setup({
+			on_attach = on_attach,
+			capabilities = capabilities,
+			root_dir = lspconfig.util.root_pattern("uno.config.js"),
+		})
+	end,
+
+	["tailwindcss"] = function()
+		lspconfig.tailwindcss.setup({
+			on_attach = on_attach,
+			capabilities = capabilities,
+			root_dir = lspconfig.util.root_pattern("tailwind.config.js"),
+		})
+	end,
+
 	["lua_ls"] = function()
 		lspconfig.lua_ls.setup({
 			settings = {
